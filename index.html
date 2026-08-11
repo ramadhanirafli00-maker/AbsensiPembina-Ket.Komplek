@@ -209,7 +209,7 @@
   <div class="card">
     <div class="card-header">
       <!-- LOGO DI DALAM KARTU (Sesuai Screenshot) -->
-      <img src="logo_mq.png" alt="Logo Madrasatul Qur'an" class="app-logo">
+      <img src="logo_mq.png" alt="logo_mq" class="app-logo">
       <div class="clock-badge" id="realtimeClock">--:--:-- WIB</div>
       <h2>Absensi Pembina Kamar</h2>
     </div>
@@ -224,6 +224,10 @@
           <option value="Komplek JF">Komplek JF</option>
           <option value="Komplek MA">Komplek MA</option>
           <option value="Komplek DM">Komplek DM</option>
+          <option value="Komplek MB">Komplek MB</option>
+          <option value="Komplek MK">Komplek MK</option>
+          <option value="Komplek MM">Komplek MM</option>
+          <option value="Komplek DS">Komplek DS</option>
         </select>
       </div>
 
@@ -266,7 +270,7 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // 2. LOGIKA PILIH KAMAR DINAMIS (KODE 2)
+    // 2. LOGIKA PILIH KAMAR DINAMIS
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwZ7_8Hx4VOn39RlbGACrwq__XHBSJuhzVq4gP1WIp7Wyv0wF3DQH3rxEhQ4cCG7JTy/exec';
 
     const komplekSelect = document.getElementById('komplek');
@@ -276,7 +280,11 @@
       "Komplek MS": { jumlah: 19, prefix: "MS" },
       "Komplek JF": { jumlah: 18, prefix: "JF" },
       "Komplek MA": { jumlah: 18, prefix: "MA" },
-      "Komplek DM": { jumlah: 12, prefix: "DM" }
+      "Komplek DM": { jumlah: 12, prefix: "DM" },
+      "Komplek MM": { items: ["MM 05", "MM 06", "MM 07", "MM 08", "Ket. Badrus", "Ket. Rivandi"] },
+      "Komplek MK": { items: ["MK 05", "MK 06", "MK 07", "Ket. Atho'", "Ket. Mukhith"] },
+      "Komplek MB": { items: ["MB 05", "MB 06", "MB 07", "Ket. Hafid", "Ket. Dhani"] },
+      "Komplek DS": { items: ["DS 05", "DS 06", "DS 07", "DS 08", "Ket. Wafa", "Ket. Anam"] }
     };
 
     komplekSelect.addEventListener('change', function() {
@@ -286,18 +294,29 @@
       usernameSelect.innerHTML = '<option value="" disabled selected>-- Pilih Kamar --</option>';
       usernameSelect.disabled = false;
 
-      for (let i = 1; i <= info.jumlah; i++) {
-        let formatAngka = i < 10 ? '0' + i : i;
-        let idWarga = info.prefix + ' ' + formatAngka; 
+      if (info.items) {
+        // Jika menggunakan daftar custom (untuk MM, MK, MB, DS)
+        info.items.forEach(namaItem => {
+          const option = document.createElement('option');
+          option.value = namaItem;
+          option.text = namaItem;
+          usernameSelect.appendChild(option);
+        });
+      } else {
+        // Jika menggunakan perulangan angka otomatis (untuk MS, JF, MA, DM)
+        for (let i = 1; i <= info.jumlah; i++) {
+          let formatAngka = i < 10 ? '0' + i : i;
+          let idWarga = info.prefix + ' ' + formatAngka; 
 
-        const option = document.createElement('option');
-        option.value = idWarga;
-        option.text = idWarga;
-        usernameSelect.appendChild(option);
+          const option = document.createElement('option');
+          option.value = idWarga;
+          option.text = idWarga;
+          usernameSelect.appendChild(option);
+        }
       }
     });
 
-    // 3. LOGIKA KIRIM DATA FORM (KODE 2)
+    // 3. LOGIKA KIRIM DATA FORM
     const form = document.getElementById('authForm');
     const messageDiv = document.getElementById('message');
     const btnSubmit = document.getElementById('btnSubmit');
