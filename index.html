@@ -208,7 +208,6 @@
 
   <div class="card">
     <div class="card-header">
-      <!-- LOGO DI DALAM KARTU (Sesuai Screenshot) -->
       <img src="logo_mq.png" alt="Logo Madrasatul Qur'an" class="app-logo">
       <div class="clock-badge" id="realtimeClock">--:--:-- WIB</div>
       <h2>Absensi Pembina Kamar</h2>
@@ -284,6 +283,7 @@
       "Komplek MM": { items: ["MM 05", "MM 06", "MM 07", "MM 08", "Ket. Badrus", "Ket. Rivandi"] },
       "Komplek MK": { items: ["MK 05", "MK 06", "MK 07", "Ket. Atho'", "Ket. Mukhith"] },
       "Komplek MB": { items: ["MB 05", "MB 06", "MB 07", "Ket. Hafid", "Ket. Dhani"] },
+      // Update Komplek DS: mulai dari DS 07
       "Komplek DS": { items: ["DS 07", "DS 08", "Ket. Wafa", "Ket. Anam"] }
     };
 
@@ -295,7 +295,7 @@
       usernameSelect.disabled = false;
 
       if (info.items) {
-        // Jika menggunakan daftar custom (untuk MM, MK, MB, DS)
+        // Jika menggunakan daftar custom
         info.items.forEach(namaItem => {
           const option = document.createElement('option');
           option.value = namaItem;
@@ -303,7 +303,7 @@
           usernameSelect.appendChild(option);
         });
       } else {
-        // Jika menggunakan perulangan angka otomatis (untuk MS, JF, MA, DM)
+        // Jika menggunakan perulangan angka otomatis
         for (let i = 1; i <= info.jumlah; i++) {
           let formatAngka = i < 10 ? '0' + i : i;
           let idWarga = info.prefix + ' ' + formatAngka; 
