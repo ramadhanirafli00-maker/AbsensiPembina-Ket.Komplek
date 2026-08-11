@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Absensi Pembina Kamar</title>
+  <style>
+    /* Reset & Font System (Zero-load Time) */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #102a43;
+    }
+
+    /* Kartu Utama */
+    .card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 420px;
+      padding: 32px 28px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+
+    .card-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    /* Logo di Dalam Kartu (Sesuai Screenshot) */
+    .app-logo {
+      width: 80px;
+      height: auto;
+      margin-bottom: 14px;
+      object-fit: contain;
+    }
+
+    /* Jam Digital Real-time Badge */
+    .clock-badge {
+      display: inline-block;
+      background-color: #f1f5f9;
+      color: #64748b;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      letter-spacing: 0.02em;
+    }
+
+    .card h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+
+    /* Form Input */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #475569;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 0.95rem;
+      color: #1e293b;
+      background-color: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      outline: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    select:focus {
+      border-color: #2563eb;
+      background-color: #ffffff;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    select:disabled {
+      background-color: #f1f5f9;
+      color: #94a3b8;
+      cursor: not-allowed;
+      border-color: #cbd5e1;
+    }
+
+    /* Tombol & State */
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      box-sizing: border-box;
+    }
+
+    .btn-primary {
+      background-color: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
+      background-color: #93c5fd;
+      cursor: not-allowed;
+      opacity: 0.8;
+    }
+
+    .btn-secondary {
+      background-color: #64748b;
+      color: #ffffff;
+    }
+
+    .btn-secondary:hover {
+      background-color: #475569;
+    }
+
+    /* Animation Spinner (Anti-lag) */
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #ffffff;
+      animation: spin 0.7s linear infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Status Alert */
+    .status-alert {
+      margin-top: 20px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      text-align: center;
+      display: none;
+    }
+
+    .status-alert.success {
+      background-color: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+
+    .status-alert.error {
+      background-color: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .status-alert.info {
+      background-color: #f8fafc;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="card-header">
+      <!-- LOGO DI DALAM KARTU (Sesuai Screenshot) -->
+      <img src="logo_mq.png" alt="Logo Madrasatul Qur'an" class="app-logo">
+      <div class="clock-badge" id="realtimeClock">--:--:-- WIB</div>
+      <h2>Absensi Pembina Kamar</h2>
+    </div>
+
+    <form id="authForm">
+      <!-- 1. Pilih Komplek -->
+      <div class="form-group">
+        <label for="komplek">1. Pilih Komplek:</label>
+        <select id="komplek" required>
+          <option value="" disabled selected>-- Pilih Komplek --</option>
+          <option value="Komplek MS">Komplek MS</option>
+          <option value="Komplek JF">Komplek JF</option>
+          <option value="Komplek MA">Komplek MA</option>
+          <option value="Komplek DM">Komplek DM</option>
+        </select>
+      </div>
+
+      <!-- 2. Pilih Kamar -->
+      <div class="form-group">
+        <label for="username">2. Pilih Kamar:</label>
+        <select id="username" required disabled>
+          <option value="" disabled selected>-- Pilih Kamar --</option>
+        </select>
+      </div>
+
+      <!-- Tombol Group -->
+      <div class="button-group">
+        <button type="submit" class="btn btn-primary" id="btnSubmit">Absen Sekarang</button>
+        <a href="https://docs.google.com/spreadsheets/d/1IHScZnAImbh93fhHJcKVmllMVo8oxtt4JrTPSvuQ7Yg/edit?gid=0#gid=0" target="_blank" class="btn btn-secondary">Lihat Absensi</a>
+      </div>
+    </form>
+
+    <!-- Status Message Alert -->
+    <div class="status-alert" id="message"></div>
+  </div>
+
+  <script>
+    // 1. UPDATE JAM REAL-TIME
+    function updateClock() {
+      const now = new Date();
+      const options = { 
+        timeZone: 'Asia/Jakarta', 
+        day: '2-digit', 
+        month: '2-digit', 
+        year: 'numeric',
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit',
+        hour12: false 
+      };
+      const formattedTime = now.toLocaleString('id-ID', options).replace(/\./g, ':');
+      document.getElementById('realtimeClock').innerText = formattedTime + ' WIB';
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 2. LOGIKA PILIH KAMAR DINAMIS (KODE 2)
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxx7SLZ49QcWjDtj59tWXIA1E5JN-hR6QhaFUjlkgvISq6cMzYPri0MKnwqNQH_UBs/exec';
+
+    const komplekSelect = document.getElementById('komplek');
+    const usernameSelect = document.getElementById('username');
+
+    const dataKomplek = {
+      "Komplek MS": { jumlah: 19, prefix: "MS" },
+      "Komplek JF": { jumlah: 18, prefix: "JF" },
+      "Komplek MA": { jumlah: 18, prefix: "MA" },
+      "Komplek DM": { jumlah: 12, prefix: "DM" }
+    };
+
+    komplekSelect.addEventListener('change', function() {
+      const pilihan = this.value;
+      const info = dataKomplek[pilihan];
+
+      usernameSelect.innerHTML = '<option value="" disabled selected>-- Pilih Kamar --</option>';
+      usernameSelect.disabled = false;
+
+      for (let i = 1; i <= info.jumlah; i++) {
+        let formatAngka = i < 10 ? '0' + i : i;
+        let idWarga = info.prefix + ' ' + formatAngka; 
+
+        const option = document.createElement('option');
+        option.value = idWarga;
+        option.text = idWarga;
+        usernameSelect.appendChild(option);
+      }
+    });
+
+    // 3. LOGIKA KIRIM DATA FORM (KODE 2)
+    const form = document.getElementById('authForm');
+    const messageDiv = document.getElementById('message');
+    const btnSubmit = document.getElementById('btnSubmit');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault(); 
+      
+      btnSubmit.disabled = true;
+      btnSubmit.innerHTML = '<span class="spinner"></span> Mengirim...';
+      
+      messageDiv.className = 'status-alert info';
+      messageDiv.innerText = 'Mengirim data...';
+      messageDiv.style.display = 'block';
+
+      const payload = {
+        username: usernameSelect.value.trim()
+      };
+
+      fetch(scriptURL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(data => {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = 'Absen Sekarang';
+
+        if (data.status === 'success') {
+          messageDiv.className = 'status-alert success';
+          messageDiv.innerText = '✓ ' + data.message;
+          usernameSelect.value = ""; 
+        } else {
+          messageDiv.className = 'status-alert error';
+          messageDiv.innerText = '✕ ' + (data.message || 'Gagal menyimpan absensi.');
+        }
+      })
+      .catch(error => {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = 'Absen Sekarang';
+        messageDiv.className = 'status-alert error';
+        messageDiv.innerText = '✕ Terjadi kesalahan jaringan/server.';
+        console.error('Error!', error);
+      });
+    });
+  </script>
+</body>
+</html>
